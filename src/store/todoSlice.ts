@@ -41,9 +41,46 @@ export const fetchTodos = createAsyncThunk(
       const data = await response.json();
       return data;
     } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : "Unknown error");
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Unknown error",
+      );
     }
-  }
+  },
+);
+
+// Async thunk for adding a todo to db.json
+export const addTodoToDb = createAsyncThunk(
+  "todos/addTodoToDb",
+  async (todoData: TodoInput, { rejectWithValue }) => {
+    try {
+      const newTodo = {
+        id: nanoid(),
+        text: todoData.text,
+        category: todoData.category || "",
+        completed: todoData.completed || false,
+        description: todoData.description || "",
+      };
+
+      const response = await fetch("http://localhost:3000/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTodo),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add todo");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Unknown error",
+      );
+    }
+  },
 );
 
 const todoSlice = createSlice({
@@ -78,7 +115,21 @@ const todoSlice = createSlice({
       })
       .addCase(fetchTodos.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string || "Unknown error";
+        state.error = (action.payload as string) || "Unknown error";
+      })
+      // Add cases for addTodoToDb
+      .addCase(addTodoToDb.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addTodoToDb.fulfilled, (state, action: PayloadAction<Todo>) => {
+        state.todos.push(action.payload);
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(addTodoToDb.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Unknown error";
       });
   },
 });

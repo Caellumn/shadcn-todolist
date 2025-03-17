@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import CategoriesDropdown from "@/components/CategoriesDropdown";
 import { useState } from "react";
-import { addTodo, TodoInput } from "@/store/todoSlice";
+import { addTodoToDb, TodoInput } from "@/store/todoSlice";
 import { useAppDispatch } from "@/store/hooks";
+import { toast } from "sonner";
 
 const Form = () => {
   const [text, setText] = useState("");
@@ -23,8 +24,17 @@ const Form = () => {
       category,
     };
 
-    // Dispatch the action to Redux
-    dispatch(addTodo(todoData));
+    // Dispatch the async thunk to add todo to db.json
+    dispatch(addTodoToDb(todoData))
+      .unwrap()
+      .then(() => {
+        // Show success toast when todo is added successfully
+        toast.success("Todo successfully added");
+      })
+      .catch((error) => {
+        // Show error toast if adding todo fails
+        toast.error(`Failed to add todo: ${error}`);
+      });
 
     // Reset form fields
     setText("");
