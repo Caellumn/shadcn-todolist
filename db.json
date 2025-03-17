@@ -17,14 +17,14 @@
     {
       "id": "3",
       "text": "Go for a run",
-      "completed": false,
+      "completed": true,
       "category": "Personal",
       "description": "30-minute jog in the park"
     },
     {
       "id": "4",
       "text": "Read a book",
-      "completed": false,
+      "completed": true,
       "category": "Personal",
       "description": "Finish the current chapter of the novel"
     },
@@ -38,7 +38,7 @@
     {
       "id": "6",
       "text": "Prepare presentation for client meeting",
-      "completed": false,
+      "completed": true,
       "category": "Work",
       "description": "Create slides and talking points for tomorrow's meeting"
     },
@@ -87,7 +87,7 @@
     {
       "id": "39",
       "text": "30 minute workout",
-      "completed": false,
+      "completed": true,
       "category": "Health",
       "description": "Complete a full-body exercise routine"
     },
@@ -124,7 +124,8 @@
       "text": "",
       "status": "",
       "description": "",
-      "category": ""
+      "category": "",
+      "completed": true
     },
     {
       "id": "VDqaxPkx2-Oo6Hw-UZ_K6",
@@ -226,13 +227,6 @@
       "description": "gjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
     },
     {
-      "id": "bugmAVe3lZi7rPjgeE6eJ",
-      "text": "ffffffffffffffffffffff",
-      "category": "Work",
-      "completed": false,
-      "description": "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
-    },
-    {
       "id": "IH3bhzzc0XSJXqii8kvxI",
       "text": "fzsgzsrhzrhzrhzrh",
       "category": "Health",
@@ -240,18 +234,11 @@
       "description": "zrhejtejyrtkjtykuyluyllyulu"
     },
     {
-      "id": "nflkDPO-FXlTcf1bCIq2A",
-      "text": "zgerrgzrgzgrzzrgzrg",
+      "id": "ba35",
+      "text": "mmmmmmmmmmmmmmm",
       "category": "Personal",
-      "completed": false,
-      "description": "zrgrzrzhzrhhrzzhr"
-    },
-    {
-      "id": "e-WhJCUogAh5F2mrrx3Xv",
-      "text": "sfghrfj,kjhrgfe",
-      "category": "Shopping",
-      "completed": false,
-      "description": "hhhhttehjethjetjhetjhe"
+      "description": "mmmmmmmmmmmmmmmmmmm",
+      "completed": false
     }
   ],
   "categories": [

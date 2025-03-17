@@ -1,12 +1,15 @@
 import Layout from "./components/Layout";
 import { ThemeProvider } from "./components/theme-provider";
-import Todo from "./components/Todo";
+import TodoList from "./components/TodoList";
 import { Provider } from "react-redux";
 import store from "./store";
 import Form from "./components/Form";
 import { useEffect } from "react";
-import { fetchTodos } from "./store/todoSlice";
-import { useAppDispatch } from "./store/hooks";
+import {
+  fetchTodos,
+  fetchTodosSuccess,
+  fetchTodosFailure,
+} from "./store/todosSlice";
 import CategoriesDropdown from "./components/CategoriesDropdown";
 import {
   DropdownMenu,
@@ -18,12 +21,32 @@ import { Button } from "@/components/ui/button";
 
 // Component to initialize data fetching
 const TodoApp = () => {
-  const dispatch = useAppDispatch();
-
   useEffect(() => {
-    // Fetch todos when the app loads
-    dispatch(fetchTodos());
-  }, [dispatch]);
+    // Dispatch fetchTodos action to set loading state
+    store.dispatch(fetchTodos());
+
+    // Manually fetch the data
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/todos");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch todos");
+        }
+
+        const data = await response.json();
+        // Dispatch success action with the fetched data
+        store.dispatch(fetchTodosSuccess(data));
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        // Dispatch failure action if there was an error
+        store.dispatch(fetchTodosFailure(errorMessage));
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <Layout>
@@ -40,28 +63,27 @@ const TodoApp = () => {
               <button>all</button>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <button>open</button>
+              <button>completed</button>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <button>finished</button>
+              <button>not completed</button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <Todo />
+      <TodoList />
     </Layout>
   );
 };
 
-const App = () => {
+function App() {
   return (
-    <>
-      <Provider store={store}>
-        <ThemeProvider>
-          <TodoApp />
-        </ThemeProvider>
-      </Provider>
-    </>
+    <Provider store={store}>
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+        <TodoApp />
+      </ThemeProvider>
+    </Provider>
   );
-};
+}
+
 export default App;
