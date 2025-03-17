@@ -4,119 +4,182 @@
       "id": "1",
       "text": "Learn React",
       "completed": true,
-      "category": "Work"
+      "category": "Work",
+      "description": "Study React fundamentals and build a small project"
     },
     {
       "id": "2",
       "text": "Build a todo app",
       "completed": false,
-      "category": "Work"
+      "category": "Work",
+      "description": "Create a todo application using React and Redux"
     },
     {
       "id": "3",
       "text": "Go for a run",
       "completed": false,
-      "category": "Personal"
+      "category": "Personal",
+      "description": "30-minute jog in the park"
     },
     {
       "id": "4",
       "text": "Read a book",
       "completed": false,
-      "category": "Personal"
+      "category": "Personal",
+      "description": "Finish the current chapter of the novel"
     },
     {
       "id": "5",
       "text": "Buy groceries",
       "completed": false,
-      "category": "Shopping"
+      "category": "Shopping",
+      "description": "Get items for the week's meals"
     },
     {
       "id": "6",
       "text": "Prepare presentation for client meeting",
       "completed": false,
-      "category": "Work"
+      "category": "Work",
+      "description": "Create slides and talking points for tomorrow's meeting"
     },
     {
       "id": "7",
       "text": "Review project timeline",
       "completed": true,
-      "category": "Work"
+      "category": "Work",
+      "description": "Assess progress and adjust deadlines if necessary"
     },
     {
       "id": "8",
       "text": "Update documentation",
       "completed": false,
-      "category": "Work"
+      "category": "Work",
+      "description": "Revise API documentation for recent changes"
     },
     {
       "id": "9",
       "text": "Fix bug in login component",
       "completed": true,
-      "category": "Work"
+      "category": "Work",
+      "description": "Resolve issue with user authentication"
     },
     {
       "id": "10",
       "text": "Attend team standup",
       "completed": false,
-      "category": "Work"
+      "category": "Work",
+      "description": "Join daily meeting to discuss progress and blockers"
     },
     {
       "id": "18",
       "text": "Call mom",
       "completed": true,
-      "category": "Personal"
+      "category": "Personal",
+      "description": "Check in and catch up on family news"
     },
     {
       "id": "19",
       "text": "Schedule dentist appointment",
       "completed": false,
-      "category": "Personal"
+      "category": "Personal",
+      "description": "Book a check-up for next month"
     },
     {
       "id": "39",
       "text": "30 minute workout",
       "completed": false,
-      "category": "Health"
+      "category": "Health",
+      "description": "Complete a full-body exercise routine"
     },
     {
       "id": "40",
       "text": "Drink 8 glasses of water",
       "completed": true,
-      "category": "Health"
+      "category": "Health",
+      "description": "Stay hydrated throughout the day"
     },
     {
       "id": "47",
       "text": "Complete online course module",
       "completed": false,
-      "category": "Learning"
+      "category": "Learning",
+      "description": "Finish the current section of the web development course"
     },
     {
       "id": "48",
       "text": "Read chapter of technical book",
       "completed": true,
-      "category": "Learning"
+      "category": "Learning",
+      "description": "Study one chapter on advanced JavaScript concepts"
+    },
+    {
+      "id": "8B3BB1VUxyI3gr_kHBHGf",
+      "text": "",
+      "status": "",
+      "description": "",
+      "category": ""
+    },
+    {
+      "id": "4U_A3GMPQl3MBc1WA3Z3z",
+      "text": "",
+      "status": "",
+      "description": "",
+      "category": ""
+    },
+    {
+      "id": "VDqaxPkx2-Oo6Hw-UZ_K6",
+      "text": "",
+      "status": "",
+      "description": "",
+      "category": ""
+    },
+    {
+      "id": "9uno-MB6AF7W28E7zvfD6",
+      "text": "",
+      "status": false,
+      "description": "",
+      "category": ""
+    },
+    {
+      "id": "KUje3NJsynaxNd4JiiyR6",
+      "text": "",
+      "status": false,
+      "description": "",
+      "category": ""
+    },
+    {
+      "id": "UuTSCEFgu13SrGkCRkCTn",
+      "text": "ezfezgge",
+      "status": false,
+      "description": "",
+      "category": ""
     }
   ],
   "categories": [
     {
       "name": "Work",
-      "color": "#f59e0b"
+      "color": "#f59e0b",
+      "id": "87a5"
     },
     {
       "name": "Personal",
-      "color": "#ef4444"
+      "color": "#ef4444",
+      "id": "9a5c"
     },
     {
       "name": "Shopping",
-      "color": "#3b82f6"
+      "color": "#3b82f6",
+      "id": "8cbf"
     },
     {
       "name": "Health",
-      "color": "#10b981"
+      "color": "#10b981",
+      "id": "a1df"
     },
     {
       "name": "Learning",
-      "color": "#8b5cf6"
+      "color": "#8b5cf6",
+      "id": "a3c0"
     }
   ]
 }

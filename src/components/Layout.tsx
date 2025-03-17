@@ -7,63 +7,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ModeToggle } from "@/components/mode-toggle";
 import Todo from "@/components/Todo";
+import Form from "@/components/Form";
+import CategoriesDropdown from "@/components/CategoriesDropdown";
 const Layout = () => {
   return (
     <>
-      <div className="px-auto max-w-5xl space-y-8">
+      <div className="px-auto mx-auto max-w-5xl space-y-8">
         <div className="flex justify-end">
           <ModeToggle />
         </div>
         <h1>Todo App</h1>
-        <form action="" className="flex gap-2">
-          <input type="text" placeholder="Add a new todo" className="border" />
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button>categories</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>
-                <button>work</button>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <button>personal</button>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <button>shopping</button>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <button>health</button>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <button>learning</button>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button>+ Add</Button>
-        </form>
+        <Form />
         <div className="flex gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button> all categories</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="flex flex-col">
-              <DropdownMenuItem>
-                <button>work</button>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <button>personal</button>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <button>shopping</button>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <button>health</button>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <button>learning</button>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <CategoriesDropdown />
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Button> all status</Button>

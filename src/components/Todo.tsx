@@ -13,11 +13,12 @@ interface Todo {
   text: string;
   category: string;
   status: string;
+  description: string;
 }
 const Todo = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -59,7 +60,7 @@ const Todo = () => {
                 <p>{todo.text}</p>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <p>dummydata</p>
+                <p>{todo.description}</p>
               </CollapsibleContent>
             </Collapsible>
           </div>
