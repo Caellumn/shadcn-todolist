@@ -3,20 +3,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Pencil, CircleX } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
-
+import Todo from "@/components/Todo";
 const Layout = () => {
   return (
     <>
@@ -91,25 +81,7 @@ const Layout = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="flex justify-between gap-2 border">
-          <div>
-            <Checkbox />
-            <Collapsible>
-              <CollapsibleTrigger>
-                <p>Collapsible</p>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <p>Content</p>
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-          <div className="flex gap-2">
-            <Badge variant="destructive">test</Badge>
-            <ChevronDown strokeWidth={1.5} absoluteStrokeWidth />
-            <Pencil strokeWidth={0.75} />
-            <CircleX strokeWidth={0.75} />
-          </div>
-        </div>
+        <Todo />
       </div>
     </>
   );
