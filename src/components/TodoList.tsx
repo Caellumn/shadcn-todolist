@@ -1,5 +1,11 @@
 import { RootState } from "@/store";
-import { toggleTodo, removeTodo } from "@/store/todosSlice";
+import {
+  toggleTodo,
+  removeTodo,
+  fetchTodos,
+  fetchTodosSuccess,
+  fetchTodosFailure,
+} from "@/store/todosSlice";
 import { useSelector } from "react-redux";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,16 +18,50 @@ import {
 import { ChevronDown, CircleX } from "lucide-react";
 import store from "@/store";
 import { toast } from "sonner";
+import { useEffect } from "react";
+import { Todo } from "@/types/types";
+import { getStatusFilter } from "@/store/statusSlice";
+import { getCategoryFilter } from "@/store/categoryFilterSlice";
 
 const TodoList = () => {
   const todos = useSelector((state: RootState) => state.todos.todos);
   const loading = useSelector((state: RootState) => state.todos.loading);
   const error = useSelector((state: RootState) => state.todos.error);
+  const statusFilter = useSelector(getStatusFilter);
+  const categoryFilter = useSelector(getCategoryFilter);
+
+  // Fetch todos when component mounts
+  useEffect(() => {
+    // Dispatch fetchTodos action to set loading state
+    store.dispatch(fetchTodos());
+
+    // Manually fetch the data
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/todos");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch todos");
+        }
+
+        const data = await response.json();
+        // Dispatch success action with the fetched data
+        store.dispatch(fetchTodosSuccess(data));
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        // Dispatch failure action if there was an error
+        store.dispatch(fetchTodosFailure(errorMessage));
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleToggle = async (id: string, completed: boolean) => {
     try {
-      // Find de todo met de gegeven id
-      const todo = todos.find((todo) => todo.id === id);
+      // Find de todo met id
+      const todo = todos.find((todo: Todo) => todo.id === id);
       if (!todo) return;
 
       // Update de todo op de db.json server
@@ -69,6 +109,20 @@ const TodoList = () => {
     }
   };
 
+  // Filter todos based on the selected status filter
+  const filteredTodos = todos.filter((todo: Todo) => {
+    if (statusFilter === "all") return true;
+    if (statusFilter === "completed") return todo.completed;
+    if (statusFilter === "active") return !todo.completed;
+    return true;
+  });
+
+  // Filter todos based on the selected category filter
+  const filteredTodosByCategory = filteredTodos.filter((todo: Todo) => {
+    if (!categoryFilter) return true;
+    return todo.category === categoryFilter;
+  });
+
   if (loading) {
     return <div className="py-4 text-center">Loading todos...</div>;
   }
@@ -81,9 +135,20 @@ const TodoList = () => {
     return <div className="py-4 text-center">No todos found. Add some!</div>;
   }
 
+  if (filteredTodos.length === 0) {
+    return (
+      <div className="py-4 text-center">No todos match the current filter.</div>
+    );
+  }
+  if (filteredTodosByCategory.length === 0) {
+    return (
+      <div className="py-4 text-center">No todos match the current filter.</div>
+    );
+  }
+
   return (
     <div className="mt-6 space-y-4">
-      {todos.map((todo) => (
+      {filteredTodosByCategory.map((todo: Todo) => (
         <div
           key={todo.id}
           className="rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"

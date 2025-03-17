@@ -6,6 +6,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useSelector } from "react-redux";
+import { getCategoryFilter, setCategoryFilter } from "@/store/categoryFilterSlice";
+import Store from "@/store";
 
 interface Category {
   id: string;
@@ -13,39 +16,37 @@ interface Category {
   color: string;
 }
 
-interface CategoriesDropdownProps {
-  onCategoryChange?: (category: string) => void;
-  selectedCategory?: string;
-}
-
-const CategoriesDropdown = ({
-  onCategoryChange,
-  selectedCategory,
-}: CategoriesDropdownProps) => {
+const CategoryFilter = () => {
   const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState(selectedCategory || "");
-
+  const selectedCategory = useSelector(getCategoryFilter);
+  
   useEffect(() => {
     (async () => {
-      const response = await fetch("http://localhost:3000/categories");
-      const data = await response.json();
-      setCategories(data);
+      try {
+        const response = await fetch("http://localhost:3000/categories");
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
     })();
   }, []);
 
   const handleCategorySelect = (categoryName: string) => {
-    setCategory(categoryName);
-    if (onCategoryChange) {
-      onCategoryChange(categoryName);
-    }
+    Store.dispatch(setCategoryFilter(categoryName));
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <Button> {category || "-- make a choice --"}</Button>
+        <Button> {selectedCategory || "All Categories"}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
+        <DropdownMenuItem
+          onClick={() => handleCategorySelect("")}
+        >
+          All Categories
+        </DropdownMenuItem>
         {categories.map((category: Category) => (
           <DropdownMenuItem
             key={category.id}
@@ -62,4 +63,5 @@ const CategoriesDropdown = ({
     </DropdownMenu>
   );
 };
-export default CategoriesDropdown;
+
+export default CategoryFilter;

@@ -1,5 +1,7 @@
 import { createStore, combineReducers } from "redux";
 import todosReducer from "@/store/todosSlice";
+import statusReducer from "./statusSlice";
+import categoryReducer from "./categoryFilterSlice";
 
 // Define the window type for Redux DevTools Extension
 declare global {
@@ -10,6 +12,8 @@ declare global {
 
 const rootReducer = combineReducers({
   todos: todosReducer,
+  status: statusReducer,
+  categoryFilter: categoryReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -18,9 +22,9 @@ export type RootState = ReturnType<typeof rootReducer>;
 const store = createStore(
   rootReducer,
   // Add Redux DevTools Extension support if available
-  typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION__ ? 
-    window.__REDUX_DEVTOOLS_EXTENSION__() : 
-    undefined
+  typeof window !== "undefined" && window.__REDUX_DEVTOOLS_EXTENSION__
+    ? window.__REDUX_DEVTOOLS_EXTENSION__()
+    : undefined,
 );
 
 export default store;
