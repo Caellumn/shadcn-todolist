@@ -1,43 +1,41 @@
 import { RootState } from "@/store";
-import {
-  toggleTodo,
-  removeTodo,
-  fetchTodos,
-  fetchTodosSuccess,
-  fetchTodosFailure,
-} from "@/store/todosSlice";
+import { toggleTodo, removeTodo, fetchTodosSuccess } from "@/store/todosSlice";
 import { useSelector } from "react-redux";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
 import { ChevronDown, CircleX } from "lucide-react";
 import store from "@/store";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Todo } from "@/types/types";
 import { getStatusFilter } from "@/store/statusSlice";
 import { getCategoryFilter } from "@/store/categoryFilterSlice";
 
+interface Category {
+  id: string;
+  name: string;
+  color: string;
+}
+
 const TodoList = () => {
   const todos = useSelector((state: RootState) => state.todos.todos);
-  const loading = useSelector((state: RootState) => state.todos.loading);
-  const error = useSelector((state: RootState) => state.todos.error);
   const statusFilter = useSelector(getStatusFilter);
   const categoryFilter = useSelector(getCategoryFilter);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // Fetch todos when component mounts
   useEffect(() => {
-    // Dispatch fetchTodos action to set loading state
-    store.dispatch(fetchTodos());
-
-    // Manually fetch the data
-    const fetchData = async () => {
+    const fetchTodos = async () => {
       try {
+        setLoading(true);
         const response = await fetch("http://localhost:3000/todos");
 
         if (!response.ok) {
@@ -47,15 +45,31 @@ const TodoList = () => {
         const data = await response.json();
         // Dispatch success action with the fetched data
         store.dispatch(fetchTodosSuccess(data));
+        setLoading(false);
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error";
-        // Dispatch failure action if there was an error
-        store.dispatch(fetchTodosFailure(errorMessage));
+        console.error("Error fetching todos:", error);
+        setError("Failed to load todos. Please try again later.");
+        setLoading(false);
+      }
+    };
+    // fetch the cateogires we need them to change the colours
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/categories");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch categories");
+        }
+
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
       }
     };
 
-    fetchData();
+    fetchTodos();
+    fetchCategories();
   }, []);
 
   const handleToggle = async (id: string, completed: boolean) => {
@@ -107,6 +121,12 @@ const TodoList = () => {
       console.error("Error deleting todo:", error);
       toast.error("Failed to delete todo");
     }
+  };
+
+  // get color from category
+  const getCategoryColor = (categoryName: string) => {
+    const category = categories.find((cat) => cat.name === categoryName);
+    return category?.color;
   };
 
   // Filter todos based on the selected status filter
@@ -171,7 +191,15 @@ const TodoList = () => {
             </div>
             <div className="flex items-center gap-2">
               {todo.category && (
-                <Badge variant="secondary">{todo.category}</Badge>
+                <Badge
+                  variant="secondary"
+                  style={{
+                    backgroundColor: getCategoryColor(todo.category),
+                    color: "#ffffff",
+                  }}
+                >
+                  {todo.category}
+                </Badge>
               )}
               <Button
                 variant="ghost"
