@@ -15,11 +15,15 @@ import {
 } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, Pencil, CircleX } from "lucide-react";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const Layout = () => {
   return (
     <>
       <div className="px-auto max-w-5xl space-y-8">
+        <div className="flex justify-end">
+          <ModeToggle />
+        </div>
         <h1>Todo App</h1>
         <form action="" className="flex gap-2">
           <input type="text" placeholder="Add a new todo" className="border" />

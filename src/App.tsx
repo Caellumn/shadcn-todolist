@@ -1,8 +1,11 @@
 import Layout from "./components/Layout";
+import { ThemeProvider } from "./components/theme-provider";
 const App = () => {
   return (
     <>
-      <Layout />
+      <ThemeProvider>
+        <Layout />
+      </ThemeProvider>
     </>
   );
 };
