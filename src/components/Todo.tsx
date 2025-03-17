@@ -1,5 +1,5 @@
-import { getTodos } from "@/store/todoSlice";
-import { useAppSelector } from "@/store/hooks";
+import { getTodos, toggleTodo } from "@/store/todoSlice";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -9,11 +9,24 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronDown, Pencil, CircleX } from "lucide-react";
+import { toast } from "sonner";
 
 const Todo = () => {
   const todos = useAppSelector(getTodos);
   const loading = useAppSelector((state) => state.todoSlice.loading);
   const error = useAppSelector((state) => state.todoSlice.error);
+  const dispatch = useAppDispatch();
+
+  const handleToggleTodo = (id: string) => {
+    dispatch(toggleTodo(id))
+      .unwrap()
+      .then(() => {
+        toast.success("Todo status updated");
+      })
+      .catch((error) => {
+        toast.error(`Failed to update todo: ${error}`);
+      });
+  };
 
   if (loading) {
     return <div className="py-4 text-center">Loading todos...</div>;
@@ -36,8 +49,15 @@ const Todo = () => {
         >
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Checkbox checked={todo.completed} />
-              <h3 className="text-lg font-semibold">{todo.text}</h3>
+              <Checkbox
+                checked={todo.completed}
+                onCheckedChange={() => handleToggleTodo(todo.id)}
+              />
+              <h3
+                className={`text-lg font-semibold ${todo.completed ? "text-red-500 line-through" : ""}`}
+              >
+                {todo.text}
+              </h3>
             </div>
             <div className="flex items-center gap-2">
               {todo.category && (

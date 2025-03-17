@@ -29,7 +29,7 @@ export interface TodoInput {
   completed?: boolean;
 }
 
-// Async thunk for fetching todos
+// thunk to fetch
 export const fetchTodos = createAsyncThunk(
   "todos/fetchTodos",
   async (_, { rejectWithValue }) => {
@@ -48,7 +48,7 @@ export const fetchTodos = createAsyncThunk(
   },
 );
 
-// Async thunk for adding a todo to db.json
+// thunk to add
 export const addTodoToDb = createAsyncThunk(
   "todos/addTodoToDb",
   async (todoData: TodoInput, { rejectWithValue }) => {
@@ -71,6 +71,41 @@ export const addTodoToDb = createAsyncThunk(
 
       if (!response.ok) {
         throw new Error("Failed to add todo");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Unknown error",
+      );
+    }
+  },
+);
+
+// thunk to toggle
+export const toggleTodo = createAsyncThunk(
+  "todos/toggleTodo",
+  async (id: string, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as RootState;
+
+      const todo = state.todoSlice.todos.find((todo) => todo.id === id);
+
+      if (!todo) {
+        throw new Error("Todo not found");
+      }
+
+      const response = await fetch(`http://localhost:3000/todos/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ completed: !todo.completed }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to toggle todo");
       }
 
       const data = await response.json();
@@ -117,7 +152,6 @@ const todoSlice = createSlice({
         state.loading = false;
         state.error = (action.payload as string) || "Unknown error";
       })
-      // Add cases for addTodoToDb
       .addCase(addTodoToDb.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -128,6 +162,22 @@ const todoSlice = createSlice({
         state.error = null;
       })
       .addCase(addTodoToDb.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Unknown error";
+      })
+      .addCase(toggleTodo.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(toggleTodo.fulfilled, (state, action: PayloadAction<Todo>) => {
+        const todo = state.todos.find((todo) => todo.id === action.payload.id);
+        if (todo) {
+          todo.completed = !todo.completed;
+        }
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(toggleTodo.rejected, (state, action) => {
         state.loading = false;
         state.error = (action.payload as string) || "Unknown error";
       });

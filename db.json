@@ -10,7 +10,7 @@
     {
       "id": "2",
       "text": "Build a todo app",
-      "completed": false,
+      "completed": true,
       "category": "Work",
       "description": "Create a todo application using React and Redux"
     },
@@ -145,7 +145,8 @@
       "text": "",
       "status": false,
       "description": "",
-      "category": ""
+      "category": "",
+      "completed": true
     },
     {
       "id": "UuTSCEFgu13SrGkCRkCTn",
