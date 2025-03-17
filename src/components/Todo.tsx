@@ -1,80 +1,75 @@
-import { useState, useEffect } from "react";
+import { getTodos } from "@/store/todoSlice";
+import { useAppSelector } from "@/store/hooks";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Badge } from "@/components/ui/badge";
 import { ChevronDown, Pencil, CircleX } from "lucide-react";
 
-interface Todo {
-  id: string;
-  text: string;
-  category: string;
-  status: string;
-  description: string;
-}
 const Todo = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("http://localhost:3000/todos");
-        const data = await response.json();
-        setTodos(data);
-      } catch (error) {
-        setError(error as string);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTodos();
-  }, []);
+  const todos = useAppSelector(getTodos);
+  const loading = useAppSelector((state) => state.todoSlice.loading);
+  const error = useAppSelector((state) => state.todoSlice.error);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="py-4 text-center">Loading todos...</div>;
   }
 
   if (error) {
-    return <div>no todos found </div>;
+    return <div className="py-4 text-center text-red-500">Error: {error}</div>;
   }
 
-  const handleDelete = (id: string) => {
-    const updatedTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(updatedTodos);
-  };
+  if (todos.length === 0) {
+    return <div className="py-4 text-center">No todos found. Add some!</div>;
+  }
 
   return (
-    <ul className="flex flex-col justify-between gap-2 border">
-      {todos.map((todo: Todo) => (
-        <li key={todo.id} className="p-auto flex justify-between gap-2 border">
-          <div className="flex items-center gap-2">
-            <Checkbox />
+    <div className="mt-6 space-y-4">
+      {todos.map((todo) => (
+        <div
+          key={todo.id}
+          className="rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
+        >
+          <div className="mb-2 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Checkbox checked={todo.completed} />
+              <h3 className="text-lg font-semibold">{todo.text}</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              {todo.category && (
+                <Badge variant="outline" className={`destructive mr-2 ml-auto`}>
+                  {todo.category}
+                </Badge>
+              )}
+              <ChevronDown strokeWidth={0.75} />
+              <Pencil strokeWidth={0.75} />
+              <CircleX strokeWidth={0.75} />
+            </div>
+          </div>
+          {todo.description && (
             <Collapsible>
-              <CollapsibleTrigger>
-                <p>{todo.text}</p>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground w-full justify-start"
+                >
+                  View details
+                </Button>
               </CollapsibleTrigger>
               <CollapsibleContent>
-                <p>{todo.description}</p>
+                <div className="pt-2 pl-6 text-sm">{todo.description}</div>
               </CollapsibleContent>
             </Collapsible>
-          </div>
-          <div className="flex gap-2">
-            <Badge variant="destructive">{todo.category}</Badge>
-            <ChevronDown strokeWidth={1.5} absoluteStrokeWidth />
-            <Pencil strokeWidth={0.75} />
-            <CircleX strokeWidth={0.75} onClick={() => handleDelete(todo.id)} />
-          </div>
-        </li>
+          )}
+        </div>
       ))}
-    </ul>
+    </div>
   );
 };
-export default Todo;
 
-<ul></ul>;
+export default Todo;

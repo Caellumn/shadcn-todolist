@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,25 +13,40 @@ interface Category {
   color: string;
 }
 
-const CategoriesDropdown = () => {
-  const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState("");
+interface CategoriesDropdownProps {
+  onCategoryChange?: (category: string) => void;
+  selectedCategory?: string;
+}
 
-  // get data from json server the color and name
-  fetch("http://localhost:3000/categories").then((res) =>
-    res.json().then((data) => setCategories(data)),
-  );
+const CategoriesDropdown = ({ onCategoryChange, selectedCategory }: CategoriesDropdownProps) => {
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState(selectedCategory || "");
+  
+  useEffect(() => {
+    (async () => {
+      const response = await fetch("http://localhost:3000/categories");
+      const data = await response.json();
+      setCategories(data);
+    })();
+  }, []);
+
+  const handleCategorySelect = (categoryName: string) => {
+    setCategory(categoryName);
+    if (onCategoryChange) {
+      onCategoryChange(categoryName);
+    }
+  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <Button> {category || "all categories"}</Button>
+        <Button> {category || "-- make a choice --"}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {categories.map((category: Category) => (
           <DropdownMenuItem
             key={category.id}
-            onClick={() => setCategory(category.name)}
+            onClick={() => handleCategorySelect(category.name)}
           >
             <span
               className="mr-2 h-4 w-4 rounded-full"
