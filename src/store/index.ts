@@ -2,6 +2,7 @@ import { createStore, combineReducers } from "redux";
 import todosReducer from "@/store/todosSlice";
 import statusReducer from "./statusSlice";
 import categoryReducer from "./categoryFilterSlice";
+import paginationReducer from "./paginationSlice";
 
 // Define the window type for Redux DevTools Extension
 declare global {
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   todos: todosReducer,
   status: statusReducer,
   categoryFilter: categoryReducer,
+  pagination: paginationReducer
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

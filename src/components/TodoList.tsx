@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { Todo } from "@/types/types";
 import { getStatusFilter } from "@/store/statusSlice";
 import { getCategoryFilter } from "@/store/categoryFilterSlice";
+import { getCurrentPage, getItemsPerPage } from "@/store/paginationSlice";
 
 interface Category {
   id: string;
@@ -27,6 +28,8 @@ const TodoList = () => {
   const todos = useSelector((state: RootState) => state.todos.todos);
   const statusFilter = useSelector(getStatusFilter);
   const categoryFilter = useSelector(getCategoryFilter);
+  const currentPage = useSelector(getCurrentPage);
+  const itemsPerPage = useSelector(getItemsPerPage);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
@@ -143,6 +146,11 @@ const TodoList = () => {
     return todo.category === categoryFilter;
   });
 
+  // Calculate pagination
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedTodos = filteredTodosByCategory.slice(startIndex, endIndex);
+
   if (loading) {
     return <div className="py-4 text-center">Loading todos...</div>;
   }
@@ -168,7 +176,7 @@ const TodoList = () => {
 
   return (
     <div className="mt-6 space-y-4">
-      {filteredTodosByCategory.map((todo: Todo) => (
+      {paginatedTodos.map((todo: Todo) => (
         <div
           key={todo.id}
           className="rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
