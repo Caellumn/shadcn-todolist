@@ -1,9 +1,11 @@
-import { RootState } from "@/store";
 import {
-  toggleTodo,
-  removeTodo,
-  fetchTodosSuccess,
-  updateTodoDescription,
+  toggleTodoAsync,
+  removeTodoAsync,
+  updateTodoDescriptionAsync,
+  getTodos,
+  getTodosLoading,
+  getTodosError,
+  fetchTodos
 } from "@/store/todosSlice";
 import { useSelector } from "react-redux";
 import { Badge } from "@/components/ui/badge";
@@ -20,28 +22,24 @@ import { toast } from "sonner";
 import { useEffect, useState, useRef } from "react";
 import { Todo } from "@/types/types";
 import { getStatusFilter } from "@/store/statusSlice";
-import { getCategoryFilter } from "@/store/categoryFilterSlice";
+import { getCategoryFilter, getCategories, getCategoriesLoading, fetchCategories, Category } from "@/store/categoryFilterSlice";
 import {
   getCurrentPage,
   getItemsPerPage,
   setTotalFilteredItems,
 } from "@/store/paginationSlice";
-
-interface Category {
-  id: string;
-  name: string;
-  color: string;
-}
+import { ThunkDispatch, RootState } from "@/store";
 
 const TodoList = () => {
-  const todos = useSelector((state: RootState) => state.todos.todos);
+  const todos = useSelector(getTodos);
+  const todosLoading = useSelector(getTodosLoading);
+  const todosError = useSelector(getTodosError);
   const statusFilter = useSelector(getStatusFilter);
   const categoryFilter = useSelector(getCategoryFilter);
+  const categories = useSelector(getCategories);
+  const categoriesLoading = useSelector(getCategoriesLoading);
   const currentPage = useSelector(getCurrentPage);
   const itemsPerPage = useSelector(getItemsPerPage);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
   const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
   const [editDescription, setEditDescription] = useState<string>("");
   const [openCollapsibleId, setOpenCollapsibleId] = useState<string | null>(
@@ -49,55 +47,24 @@ const TodoList = () => {
   );
   const editInputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Fetch todos when component mounts
+  // Fetch todos and categories when component mounts using Redux thunks
   useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("https://shrub-ring-editor.glitch.me/todos");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch todos");
-        }
-
-        const data = await response.json();
-        // Dispatch success action with the fetched data
-        store.dispatch(fetchTodosSuccess(data));
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching todos:", error);
-        setError("Failed to load todos. Please try again later.");
-        setLoading(false);
-      }
-    };
-    // fetch the cateogires we need them to change the colours
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch(
-          "https://shrub-ring-editor.glitch.me/categories",
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch categories");
-        }
-
-        const data = await response.json();
-        setCategories(data);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-
-    fetchTodos();
-    fetchCategories();
+    // Use ThunkDispatch to properly type our dispatch function
+    const typedDispatch = store.dispatch as ThunkDispatch<RootState>;
+    typedDispatch(fetchTodos());
+    typedDispatch(fetchCategories());
   }, []);
 
   const handleToggle = (id: string) => {
-    store.dispatch(toggleTodo(id));
+    // Use ThunkDispatch to properly type our dispatch function
+    const typedDispatch = store.dispatch as ThunkDispatch<RootState>;
+    typedDispatch(toggleTodoAsync(id));
   };
 
   const handleDelete = (id: string) => {
-    store.dispatch(removeTodo(id));
+    // Use ThunkDispatch to properly type our dispatch function
+    const typedDispatch = store.dispatch as ThunkDispatch<RootState>;
+    typedDispatch(removeTodoAsync(id));
     toast.success("Todo removed successfully");
   };
 
@@ -115,7 +82,9 @@ const TodoList = () => {
   };
 
   const handleSaveDescription = (id: string) => {
-    store.dispatch(updateTodoDescription(id, editDescription));
+    // Use ThunkDispatch to properly type our dispatch function
+    const typedDispatch = store.dispatch as ThunkDispatch<RootState>;
+    typedDispatch(updateTodoDescriptionAsync(id, editDescription));
     setEditingTodoId(null);
     toast.success("Description updated successfully");
   };
@@ -126,7 +95,7 @@ const TodoList = () => {
 
   // get color from category
   const getCategoryColor = (categoryName: string) => {
-    const category = categories.find((cat) => cat.name === categoryName);
+    const category = categories.find((cat: Category) => cat.name === categoryName);
     return category?.color;
   };
 
@@ -154,12 +123,12 @@ const TodoList = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedTodos = filteredTodosByCategory.slice(startIndex, endIndex);
 
-  if (loading) {
+  if (todosLoading || categoriesLoading) {
     return <div className="py-4 text-center">Loading todos...</div>;
   }
 
-  if (error) {
-    return <div className="py-4 text-center text-red-500">Error: {error}</div>;
+  if (todosError) {
+    return <div className="py-4 text-center text-red-500">Error: {todosError}</div>;
   }
 
   if (todos.length === 0) {
