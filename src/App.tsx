@@ -7,6 +7,7 @@ import Form from "./components/Form";
 import FiltertButtons from "./components/FiltertButtons";
 import ShowPerPage from "./components/ShowPerPage";
 import Pagination from "./components/Pagination";
+import OverView from "./components/OverView";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Pagination />
           </div>
           <hr className="h-1 w-full bg-gray-500" />
+          <OverView />
         </Layout>
       </ThemeProvider>
     </Provider>

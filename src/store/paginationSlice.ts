@@ -8,7 +8,7 @@ interface PaginationState {
 // INITIAL STATE
 const initialState: PaginationState = {
   currentPage: 1,
-  itemsPerPage: 5
+  itemsPerPage: 5,
 };
 
 // ACTION TYPES
@@ -32,30 +32,30 @@ type PaginationAction = SetCurrentPageAction | SetItemsPerPageAction;
 // ACTION CREATORS
 export const setCurrentPage = (page: number): SetCurrentPageAction => ({
   type: SET_CURRENT_PAGE,
-  payload: page
+  payload: page,
 });
 
 export const setItemsPerPage = (count: number): SetItemsPerPageAction => ({
   type: SET_ITEMS_PER_PAGE,
-  payload: count
+  payload: count,
 });
 
 // REDUCER
 const paginationReducer = (
   state = initialState,
-  action: PaginationAction
+  action: PaginationAction,
 ): PaginationState => {
   switch (action.type) {
     case SET_CURRENT_PAGE:
       return {
         ...state,
-        currentPage: action.payload
+        currentPage: action.payload,
       };
     case SET_ITEMS_PER_PAGE:
       return {
         ...state,
         itemsPerPage: action.payload,
-        currentPage: 1 // Reset to first page when changing items per page
+        currentPage: 1,
       };
     default:
       return state;
@@ -63,8 +63,10 @@ const paginationReducer = (
 };
 
 // SELECTORS
-export const getCurrentPage = (state: RootState) => state.pagination.currentPage;
-export const getItemsPerPage = (state: RootState) => state.pagination.itemsPerPage;
+export const getCurrentPage = (state: RootState) =>
+  state.pagination.currentPage;
+export const getItemsPerPage = (state: RootState) =>
+  state.pagination.itemsPerPage;
 export const getTotalPages = (state: RootState) => {
   const totalItems = state.todos.todos.length;
   const itemsPerPage = state.pagination.itemsPerPage;
