@@ -1,5 +1,10 @@
 import { RootState } from "@/store";
-import { toggleTodo, removeTodo, fetchTodosSuccess } from "@/store/todosSlice";
+import {
+  toggleTodo,
+  removeTodo,
+  fetchTodosSuccess,
+  updateTodoDescription,
+} from "@/store/todosSlice";
 import { useSelector } from "react-redux";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -9,14 +14,18 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, CircleX } from "lucide-react";
+import { ChevronDown, CircleX, Pencil, Save } from "lucide-react";
 import store from "@/store";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Todo } from "@/types/types";
 import { getStatusFilter } from "@/store/statusSlice";
 import { getCategoryFilter } from "@/store/categoryFilterSlice";
-import { getCurrentPage, getItemsPerPage, setTotalFilteredItems } from "@/store/paginationSlice";
+import {
+  getCurrentPage,
+  getItemsPerPage,
+  setTotalFilteredItems,
+} from "@/store/paginationSlice";
 
 interface Category {
   id: string;
@@ -33,13 +42,19 @@ const TodoList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
+  const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
+  const [editDescription, setEditDescription] = useState<string>("");
+  const [openCollapsibleId, setOpenCollapsibleId] = useState<string | null>(
+    null,
+  );
+  const editInputRef = useRef<HTMLTextAreaElement>(null);
 
   // Fetch todos when component mounts
   useEffect(() => {
     const fetchTodos = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:3000/todos");
+        const response = await fetch("https://shrub-ring-editor.glitch.me/todos");
 
         if (!response.ok) {
           throw new Error("Failed to fetch todos");
@@ -58,7 +73,9 @@ const TodoList = () => {
     // fetch the cateogires we need them to change the colours
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:3000/categories");
+        const response = await fetch(
+          "https://shrub-ring-editor.glitch.me/categories",
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch categories");
@@ -75,55 +92,36 @@ const TodoList = () => {
     fetchCategories();
   }, []);
 
-  const handleToggle = async (id: string, completed: boolean) => {
-    try {
-      // Find de todo met id
-      const todo = todos.find((todo: Todo) => todo.id === id);
-      if (!todo) return;
-
-      // Update de todo op de db.json server
-      const response = await fetch(`http://localhost:3000/todos/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          completed: !completed,
-        }),
-      });
-
-      if (!response.ok) {
-        toast.error("Failed to update todo");
-        return;
-      }
-
-      // If server update successful, update the Redux state
-      store.dispatch(toggleTodo(id));
-      toast.success("Todo status updated");
-    } catch (error) {
-      console.error("Error updating todo:", error);
-      toast.error("Failed to update todo status");
-    }
+  const handleToggle = (id: string) => {
+    store.dispatch(toggleTodo(id));
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      // Delete the todo on the server
-      const response = await fetch(`http://localhost:3000/todos/${id}`, {
-        method: "DELETE",
-      });
+  const handleDelete = (id: string) => {
+    store.dispatch(removeTodo(id));
+    toast.success("Todo removed successfully");
+  };
 
-      if (!response.ok) {
-        toast.error("Failed to delete todo");
-        return;
+  const handleEditClick = (todo: Todo) => {
+    setEditingTodoId(todo.id);
+    setEditDescription(todo.description || "");
+    setOpenCollapsibleId(todo.id);
+
+    // Focus the input after it's rendered
+    setTimeout(() => {
+      if (editInputRef.current) {
+        editInputRef.current.focus();
       }
+    }, 0);
+  };
 
-      store.dispatch(removeTodo(id));
-      toast.success("Todo deleted successfully");
-    } catch (error) {
-      console.error("Error deleting todo:", error);
-      toast.error("Failed to delete todo");
-    }
+  const handleSaveDescription = (id: string) => {
+    store.dispatch(updateTodoDescription(id, editDescription));
+    setEditingTodoId(null);
+    toast.success("Description updated successfully");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTodoId(null);
   };
 
   // get color from category
@@ -187,15 +185,15 @@ const TodoList = () => {
           className="rounded-lg border p-4 shadow-sm transition-shadow hover:shadow-md"
         >
           <div className="mb-2 flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <Checkbox
-                id={`todo-${todo.id}`}
                 checked={todo.completed}
-                onCheckedChange={() => handleToggle(todo.id, todo.completed)}
+                onCheckedChange={() => handleToggle(todo.id)}
+                id={`todo-${todo.id}`}
               />
               <label
                 htmlFor={`todo-${todo.id}`}
-                className={`cursor-pointer ${
+                className={`text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${
                   todo.completed ? "text-gray-500 line-through" : ""
                 }`}
               >
@@ -205,17 +203,24 @@ const TodoList = () => {
             <div className="flex items-center gap-2">
               {todo.category && (
                 <Badge
-                  variant="secondary"
+                  className="ml-2"
                   style={{
                     backgroundColor: getCategoryColor(todo.category),
-                    color: "#ffffff",
+                    color: "white",
                   }}
                 >
                   {todo.category}
                 </Badge>
               )}
               <Button
-                variant="ghost"
+                variant="outline"
+                size="icon"
+                onClick={() => handleEditClick(todo)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
                 size="icon"
                 onClick={() => handleDelete(todo.id)}
               >
@@ -223,16 +228,59 @@ const TodoList = () => {
               </Button>
             </div>
           </div>
-          {todo.description && (
-            <Collapsible className="mt-2">
-              <CollapsibleTrigger className="flex w-full items-center justify-start border-t pt-2 text-sm text-gray-500">
-                Details <ChevronDown className="ml-1 h-3 w-3" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="pt-2 text-sm">
-                {todo.description}
-              </CollapsibleContent>
-            </Collapsible>
-          )}
+
+          <Collapsible
+            open={openCollapsibleId === todo.id}
+            onOpenChange={(open) => {
+              if (open) {
+                setOpenCollapsibleId(todo.id);
+              } else if (openCollapsibleId === todo.id) {
+                setOpenCollapsibleId(null);
+              }
+            }}
+          >
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="sm" className="p-0">
+                {openCollapsibleId === todo.id ? "Hide" : "Show"} Description{" "}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pt-2">
+              {editingTodoId === todo.id ? (
+                <div className="space-y-2">
+                  <textarea
+                    ref={editInputRef}
+                    className="border-input bg-background w-full rounded-md border px-3 py-2 text-sm"
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    rows={3}
+                    placeholder="Add a description..."
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleCancelEdit}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => handleSaveDescription(todo.id)}
+                    >
+                      <Save className="mr-1 h-4 w-4" />
+                      Save
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm">
+                  {todo.description ? todo.description : "No description."}
+                </p>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       ))}
     </div>

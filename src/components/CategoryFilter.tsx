@@ -7,7 +7,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
-import { getCategoryFilter, setCategoryFilter } from "@/store/categoryFilterSlice";
+import {
+  getCategoryFilter,
+  setCategoryFilter,
+} from "@/store/categoryFilterSlice";
 import Store from "@/store";
 
 interface Category {
@@ -19,11 +22,13 @@ interface Category {
 const CategoryFilter = () => {
   const [categories, setCategories] = useState([]);
   const selectedCategory = useSelector(getCategoryFilter);
-  
+
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetch("http://localhost:3000/categories");
+        const response = await fetch(
+          "https://shrub-ring-editor.glitch.me/categories",
+        );
         const data = await response.json();
         setCategories(data);
       } catch (error) {
@@ -42,9 +47,7 @@ const CategoryFilter = () => {
         <Button> {selectedCategory || "All Categories"}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem
-          onClick={() => handleCategorySelect("")}
-        >
+        <DropdownMenuItem onClick={() => handleCategorySelect("")}>
           All Categories
         </DropdownMenuItem>
         {categories.map((category: Category) => (

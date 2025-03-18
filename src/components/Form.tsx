@@ -27,13 +27,16 @@ const Form = () => {
 
     try {
       // Save the todo to the server first
-      const response = await fetch("http://localhost:3000/todos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://shrub-ring-editor.glitch.me/todos",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newTodo),
         },
-        body: JSON.stringify(newTodo),
-      });
+      );
 
       if (!response.ok) {
         throw new Error("Failed to save todo to the server");

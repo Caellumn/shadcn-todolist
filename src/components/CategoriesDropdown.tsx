@@ -27,7 +27,9 @@ const CategoriesDropdown = ({
 
   useEffect(() => {
     (async () => {
-      const response = await fetch("http://localhost:3000/categories");
+      const response = await fetch(
+        "https://shrub-ring-editor.glitch.me/categories",
+      );
       const data = await response.json();
       setCategories(data);
     })();

@@ -30,6 +30,7 @@ const FETCH_TODOS_REQUEST = "FETCH_TODOS_REQUEST";
 const FETCH_TODOS_SUCCESS = "FETCH_TODOS_SUCCESS";
 const FETCH_TODOS_FAILURE = "FETCH_TODOS_FAILURE";
 const TOGGLE_TODO = "TOGGLE_TODO";
+const UPDATE_TODO_DESCRIPTION = "UPDATE_TODO_DESCRIPTION";
 
 // Action type definitions
 type AddTodoAction = {
@@ -45,6 +46,11 @@ type RemoveTodoAction = {
 type UpdateTodoAction = {
   type: typeof UPDATE_TODO;
   payload: { id: string; text: string };
+};
+
+type UpdateTodoDescriptionAction = {
+  type: typeof UPDATE_TODO_DESCRIPTION;
+  payload: { id: string; description: string };
 };
 
 type FetchTodosRequestAction = {
@@ -71,6 +77,7 @@ type TodoAction =
   | AddTodoAction
   | RemoveTodoAction
   | UpdateTodoAction
+  | UpdateTodoDescriptionAction
   | FetchTodosRequestAction
   | FetchTodosSuccessAction
   | FetchTodosFailureAction
@@ -96,6 +103,14 @@ export const removeTodo = (id: string): RemoveTodoAction => ({
 export const updateTodo = (id: string, text: string): UpdateTodoAction => ({
   type: UPDATE_TODO,
   payload: { id, text },
+});
+
+export const updateTodoDescription = (
+  id: string,
+  description: string,
+): UpdateTodoDescriptionAction => ({
+  type: UPDATE_TODO_DESCRIPTION,
+  payload: { id, description },
 });
 
 // Fetch todos action creators
@@ -143,6 +158,15 @@ const todosReducer = (state = initialState, action: TodoAction) => {
         todos: state.todos.map((todo) =>
           todo.id === action.payload.id
             ? { ...todo, text: action.payload.text }
+            : todo,
+        ),
+      };
+    case UPDATE_TODO_DESCRIPTION:
+      return {
+        ...state,
+        todos: state.todos.map((todo) =>
+          todo.id === action.payload.id
+            ? { ...todo, description: action.payload.description }
             : todo,
         ),
       };

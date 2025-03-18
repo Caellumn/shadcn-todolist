@@ -34,6 +34,7 @@ const Pagination = () => {
         variant="outline"
         size="sm"
         onClick={() => store.dispatch(setCurrentPage(1))}
+        disabled={currentPage === 1}
       >
         First
       </Button>
@@ -62,6 +63,7 @@ const Pagination = () => {
         variant="outline"
         size="sm"
         onClick={() => store.dispatch(setCurrentPage(totalPages))}
+        disabled={currentPage === totalPages}
       >
         Last
       </Button>
