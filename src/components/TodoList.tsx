@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 import { Todo } from "@/types/types";
 import { getStatusFilter } from "@/store/statusSlice";
 import { getCategoryFilter } from "@/store/categoryFilterSlice";
-import { getCurrentPage, getItemsPerPage } from "@/store/paginationSlice";
+import { getCurrentPage, getItemsPerPage, setTotalFilteredItems } from "@/store/paginationSlice";
 
 interface Category {
   id: string;
@@ -145,6 +145,11 @@ const TodoList = () => {
     if (!categoryFilter) return true;
     return todo.category === categoryFilter;
   });
+
+  // Update the total filtered items count in Redux
+  useEffect(() => {
+    store.dispatch(setTotalFilteredItems(filteredTodosByCategory.length));
+  }, [filteredTodosByCategory.length, statusFilter, categoryFilter]);
 
   // Calculate pagination
   const startIndex = (currentPage - 1) * itemsPerPage;

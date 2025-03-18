@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useSelector } from "react-redux";
-import { getCurrentPage, getTotalPages, setCurrentPage } from "@/store/paginationSlice";
+import {
+  getCurrentPage,
+  getTotalPages,
+  setCurrentPage,
+} from "@/store/paginationSlice";
 import store from "@/store";
 
 const Pagination = () => {
@@ -29,6 +33,13 @@ const Pagination = () => {
       <Button
         variant="outline"
         size="sm"
+        onClick={() => store.dispatch(setCurrentPage(1))}
+      >
+        First
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
         onClick={handlePreviousPage}
         disabled={currentPage === 1}
       >
@@ -46,6 +57,13 @@ const Pagination = () => {
       >
         Next
         <ChevronRight className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => store.dispatch(setCurrentPage(totalPages))}
+      >
+        Last
       </Button>
     </div>
   );

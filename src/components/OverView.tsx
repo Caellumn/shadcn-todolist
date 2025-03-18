@@ -4,6 +4,18 @@ import { Todo } from "@/types/types";
 
 const OverView = () => {
   const todos = useSelector((state: RootState) => state.todos.todos);
+
+  // Get counts by category
+  const categoryCounts: { [key: string]: number } = {};
+  todos.forEach((todo: Todo) => {
+    if (todo.category) {
+      categoryCounts[todo.category] = (categoryCounts[todo.category] || 0) + 1;
+    } else {
+      categoryCounts["Uncategorized"] =
+        (categoryCounts["Uncategorized"] || 0) + 1;
+    }
+  });
+
   return (
     <div className="mt-6 flex items-center justify-between">
       <p>Total todos: {todos.length}</p>
